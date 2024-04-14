@@ -26,7 +26,7 @@ fn main() {
     for stream in listener.incoming() {
         match stream {
             Ok(mut stream) => {
-                thread::spawn(move || match handle_connection(&mut stream) {
+                thread::spawn(move || match handle_client(&mut stream) {
                     Ok(_) => (),
                     Err(error) => println!("Error handling connection: {}", error),
                 });
