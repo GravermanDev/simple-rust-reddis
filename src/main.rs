@@ -11,6 +11,7 @@ fn handle_client(stream: &mut TcpStream) -> Result<(), Error> {
         let n = stream.read(&mut buf)?;
 
         if !buf[..n].starts_with(&PING_COMMAND) {
+            println!("bytes {:?}", buf[..n]);
             return Ok(());
         }
         stream.write_all("+PONG\r\n".as_bytes())?;
