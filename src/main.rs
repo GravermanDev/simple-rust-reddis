@@ -1,6 +1,7 @@
 use std::net::{TcpStream, TcpListener};
 use std::io::{Write, Read};
 use anyhow::Error;
+use std::thread;
 
 const PING_COMMAND: [u8; 14] = [0x2a, 0x31, 0xd, 0xa, 0x24, 0x34, 0xd, 0xa, 0x70, 0x69, 0x6e, 0x67, 0xd, 0xa];
 
@@ -21,17 +22,18 @@ fn main() {
 
     let listener = TcpListener::bind("127.0.0.1:6379").unwrap();
 
+
     for stream in listener.incoming() {
-         match stream {
-             Ok(mut stream) => {
-                 match handle_client(&mut stream) {
-                     Ok(_) => (),
-                     Err(error) => eprintln!("Error handling connection: {}", error),
-                 }
-             }
-             Err(e) => {
-                 println!("error: {}", e);
-             }
-         }
+        match stream {
+            Ok(mut stream) => {
+                thread::spawn(move || match handle_connection(&mut stream) {
+                    Ok(_) => (),
+                    Err(error) => println!("Error handling connection: {}", error),
+                });
+            }
+            Err(e) => {
+                println!("Error: {}", e);
+            }
+        }
     }
 }
